@@ -4,43 +4,53 @@
   inputs = {
     devshell.url = "github:numtide/devshell";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
+    stylix.url = "github:danth/stylix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
   outputs =
     inputs@{ flake-parts, ... }:
+    let
+      meta = rec {
+        system = "x86_64-linux";
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+            permittedInsecurePackages = [
+              "electron-24.8.6" # for bitwarden
+              "electron-28.3.3" # for logseq
+            ];
+          };
+          overlays = [ inputs.nixgl.overlay ];
+        };
+      };
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./nix/formatter.nix
         ./nix/devshells.nix
       ];
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
-      perSystem =
-        {
-          config,
-          self',
-          inputs',
-          pkgs,
-          system,
-          ...
-        }:
-        {
-          # Per-system attributes can be defined here. The self' and inputs'
-          # module parameters provide easy access to attributes of the same
-          # system.
-
-          # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
-          packages.default = pkgs.hello;
-        };
+      systems = [ "x86_64-linux" ];
       flake = {
-        # The usual flake attributes can be defined here, including system-
-        # agnostic ones like nixosModule and system-enumerating ones, although
-        # those are more easily expressed in perSystem.
+        homeConfigurations.example = inputs.home-manager.lib.homeManagerConfiguration {
+          inherit (meta) pkgs;
+          extraSpecialArgs = {
+            assets = ./assets;
+            inherit inputs;
+          };
+          modules = [
+            inputs.stylix.homeModules.stylix
+            ./homes/example
+          ];
+
+        };
       };
     };
 }
