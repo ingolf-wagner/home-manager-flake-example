@@ -29,7 +29,7 @@
         ];
 
         packages = [
-          # packages used in commands or in devshell
+          pkgs.home-manager # we need home-manager
         ];
       };
     };
