@@ -23,3 +23,10 @@ home-manager switch --flake .#<not-your-username> # will install the home of ano
 ```shell
 nix fmt # will run treefmt
 ```
+
+## How to update
+
+```shell
+nix flake upate # will update all inputs in flake.nix (flake.lock)
+``` 
+
