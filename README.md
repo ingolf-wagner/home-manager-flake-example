@@ -8,6 +8,7 @@
 ## Dependencies
 
 - install [nix](https://nixos.org/download/#download-nix)
+- enable [nix flakes](https://wiki.nixos.org/wiki/Flakes#Setup)
 
 ## How to apply HomeManger configuration
 
