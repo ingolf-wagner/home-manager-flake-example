@@ -2,6 +2,7 @@
 
 ## Links
 
+- [Nix Packages](https://search.nixos.org/packages)
 - [HomeManager Options](https://home-manager-options.extranix.com/)
 - [Stylix](https://github.com/nix-community/stylix)
 
